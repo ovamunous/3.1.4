@@ -36,7 +36,8 @@ public class RoleDaoImp implements RoleDao {
         return  em.createQuery("select r from Role r", Role.class).getResultList();
     }
     @Override
-    public Role getRole(String roleName) {
-        return em.find(Role.class, roleName);
+    public Role getRole(String role) {
+        return (Role) em.createQuery("FROM Role WHERE role = :role")
+                .setParameter("role", role).getSingleResult();
     }
 }

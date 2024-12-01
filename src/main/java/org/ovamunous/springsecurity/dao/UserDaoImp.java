@@ -5,6 +5,8 @@ import jakarta.persistence.PersistenceContext;
 import jakarta.validation.Valid;
 
 import org.ovamunous.springsecurity.model.User;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
 
 
@@ -15,6 +17,7 @@ public class UserDaoImp implements UserDao {
 
     @PersistenceContext
     private EntityManager em;
+    private PasswordEncoder passwordEncoder;
 
     @Override
     public void addUser(@Valid User user) {
@@ -23,6 +26,7 @@ public class UserDaoImp implements UserDao {
 
     @Override
     public void updateUser(@Valid User user) {
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         em.merge(user);
     }
 

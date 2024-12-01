@@ -24,7 +24,7 @@ import java.util.Set;
 
 @Entity
 @Table
-public class User implements GrantedAuthority, UserDetails {
+public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -104,8 +104,4 @@ public class User implements GrantedAuthority, UserDetails {
         return "id = " + this.id + ", username = " + this.username + ", password = " + this.password + ", email = " + this.email;
     }
 
-    @Override
-    public String getAuthority() {
-        return username;
-    }
 }
