@@ -6,6 +6,7 @@ import org.ovamunous.springsecurity.dao.RoleDao;
 import org.ovamunous.springsecurity.dao.UserDao;
 import org.ovamunous.springsecurity.model.Role;
 import org.ovamunous.springsecurity.model.User;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -14,8 +15,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImp implements UserService {
@@ -23,19 +28,23 @@ public class UserServiceImp implements UserService {
     private UserDao userDao;
     private PasswordEncoder passwordEncoder;
 
+    private RoleService roleService;
+
     public UserServiceImp(UserDao userDao, PasswordEncoder passwordEncoder) {
         this.userDao = userDao;
         this.passwordEncoder = passwordEncoder;
     }
+    
+    @Autowired
+    public void setRoleService(RoleService roleService) {
+        this.roleService = roleService;
+    }
 
     @Transactional
     @Override
-    public void addUser(User user) {
-        User userFromDB = userDao.getUserByUsername(user.getUsername());
-        if (userFromDB != null) {
-            return;
-        }
-        user.setRoles(Collections.singleton(new Role(1L, "ROLE_USER")));
+    public void addUser(User user, String role) {
+        Set<Role> roles = Arrays.stream(role.split(", ")).map(t -> roleService.getRole(t)).collect(Collectors.toSet());
+        user.setRoles(roles);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userDao.addUser(user);
     }

@@ -31,10 +31,17 @@ public class AdminController {
         this.roleService = roleService;
     }
 
+    @GetMapping("/admin")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public String admin(ModelMap model) {
+
+        return "admin";
+    }
+
+
     @GetMapping("/admin/users")
-    @PreAuthorize("hasAuthority('ROLE_admin')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public String allUsers(ModelMap model) {
-        System.out.println(userService.getUsers());
         List<User> users = userService.getUsers();
         model.addAttribute("users", users);
         model.addAttribute("newUser", new User());
@@ -42,13 +49,13 @@ public class AdminController {
     }
 
     @PostMapping("/admin/users/userAction")
-    @PreAuthorize("hasAuthority('ROLE_admin')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public String userAction(@ModelAttribute("newUser") User newUser,
                          @RequestParam("action") String action, @RequestParam(value = "id") String id,
-                         @RequestParam("role") String stringRoles, ModelMap model) {
+                         @RequestParam(value = "role", defaultValue = "USER") String stringRoles, ModelMap model) {
         switch (action) {
             case "add":
-                userService.addUser(newUser);
+                userService.addUser(newUser, stringRoles);
                 break;
             case "update":
                 try {
@@ -70,6 +77,6 @@ public class AdminController {
                 break;
         }
         newUser = null;
-        return "redirect:/";
+        return "redirect:/admin/users";
     }
 }
