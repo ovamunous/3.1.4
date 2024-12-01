@@ -30,6 +30,7 @@ public class UserServiceImp implements UserService {
 
     private RoleService roleService;
 
+    @Autowired
     public UserServiceImp(UserDao userDao, PasswordEncoder passwordEncoder) {
         this.userDao = userDao;
         this.passwordEncoder = passwordEncoder;
@@ -42,9 +43,7 @@ public class UserServiceImp implements UserService {
 
     @Transactional
     @Override
-    public void addUser(User user, String role) {
-        Set<Role> roles = Arrays.stream(role.split(", ")).map(t -> roleService.getRole(t)).collect(Collectors.toSet());
-        user.setRoles(roles);
+    public void addUser(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userDao.addUser(user);
     }
@@ -52,6 +51,8 @@ public class UserServiceImp implements UserService {
     @Transactional
     @Override
     public void updateUser(User user) {
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+
         userDao.updateUser(user);
     }
 

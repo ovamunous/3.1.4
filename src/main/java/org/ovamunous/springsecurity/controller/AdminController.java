@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Controller
 public class AdminController {
@@ -53,20 +55,20 @@ public class AdminController {
     public String userAction(@ModelAttribute("newUser") User newUser,
                          @RequestParam("action") String action, @RequestParam(value = "id") String id,
                          @RequestParam(value = "role", defaultValue = "USER") String stringRoles, ModelMap model) {
+        Set<Role> roles = Arrays.stream(stringRoles.split(", "))
+                .map(t -> roleService.getRole(t)).collect(Collectors.toSet());
         switch (action) {
             case "add":
-                userService.addUser(newUser, stringRoles);
+                newUser.setRoles(roles);
+                userService.addUser(newUser);
                 break;
             case "update":
-                try {
                     User oldUser = userService.getUser(Integer.parseInt(id));
+                    oldUser.setRoles(roles);
                     oldUser.setPassword(newUser.getPassword());
                     oldUser.setEmail(newUser.getEmail());
                     oldUser.setUsername(newUser.getUsername());
                     userService.updateUser(oldUser);
-                } catch (Exception e) {
-                    throw new EntityNotFoundException("User not found");
-                }
                 break;
             case "delete":
                 try {

@@ -17,7 +17,6 @@ public class UserDaoImp implements UserDao {
 
     @PersistenceContext
     private EntityManager em;
-    private PasswordEncoder passwordEncoder;
 
     @Override
     public void addUser(@Valid User user) {
@@ -26,7 +25,6 @@ public class UserDaoImp implements UserDao {
 
     @Override
     public void updateUser(@Valid User user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
         em.merge(user);
     }
 
