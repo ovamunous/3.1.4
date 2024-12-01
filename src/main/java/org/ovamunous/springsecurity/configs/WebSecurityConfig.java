@@ -2,6 +2,7 @@ package org.ovamunous.springsecurity.configs;
 
 
 
+import org.ovamunous.springsecurity.dao.UserDao;
 import org.ovamunous.springsecurity.service.UserService;
 import org.ovamunous.springsecurity.service.UserServiceImp;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,36 +25,33 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class WebSecurityConfig {
     private SuccessUserHandler successUserHandler;
-    private UserService userService;
+    private UserDao userDao;
 
     @Autowired
-    public WebSecurityConfig(SuccessUserHandler successUserHandler, UserService userService) {
+    public WebSecurityConfig(SuccessUserHandler successUserHandler, UserDao userDao) {
         this.successUserHandler = successUserHandler;
-
-
+        this.userDao = userDao;
     }
 
-    @Bean
-    @Order(1)
-    public SecurityFilterChain apiFilterChain(HttpSecurity http) throws Exception {
-        http
-                .securityMatcher("/admin/**")
-                .authorizeHttpRequests(authorize -> authorize
-                        .anyRequest().hasRole("ADMIN")
-                )
-                .httpBasic(Customizer.withDefaults());
-        return http.build();
-    }
+//    @Bean
+//    @Order(1)
+//    public SecurityFilterChain apiFilterChain(HttpSecurity http) throws Exception {
+//        http
+//                .securityMatcher("/admin/**")
+//                .authorizeHttpRequests(authorize -> authorize
+//                        .anyRequest().hasRole("ADMIN")
+//                )
+//                .httpBasic(Customizer.withDefaults());
+//        return http.build();
+//    }
 
     @Bean
     public SecurityFilterChain formLoginFilterChain(HttpSecurity http) throws Exception {
-        http
-                .authorizeHttpRequests(authorize -> authorize
-                        .anyRequest().authenticated()
-                )
+        http.authorizeHttpRequests(authorize -> authorize
+                .anyRequest().authenticated())
                 .formLogin(form -> form
-                        .successHandler(successUserHandler)
-                        .permitAll()
+                .successHandler(successUserHandler)
+                .permitAll()
                 );
         return http.build();
     }
@@ -71,7 +69,7 @@ public class WebSecurityConfig {
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-        provider.setUserDetailsService(userService);
+        provider.setUserDetailsService(new UserServiceImp(userDao, passwordEncoder()));
         provider.setPasswordEncoder(passwordEncoder());
         return provider;
     }

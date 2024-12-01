@@ -28,11 +28,11 @@ import java.util.stream.Collectors;
 @Data
 @Entity
 @Table
-public class Role  implements GrantedAuthority{
+public class Role  implements GrantedAuthority {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @Getter
     @Setter
@@ -48,16 +48,24 @@ public class Role  implements GrantedAuthority{
     public Role() {
 
     }
-    public Role(int id) {
+    public Role(Long id) {
         this.id = id;
     }
     public Role(long id, String role) {
         this.role = role;
         this.id = id;
     }
+    public Role(String role) {
+        this.role = role;
+    }
 
     @Override
     public String getAuthority() {
         return getRole();
+    }
+
+    @Override
+    public String toString() {
+        return "Role [id=" + id + ", role=" + role + "]";
     }
 }

@@ -1,6 +1,7 @@
 package org.ovamunous.springsecurity.dao;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
 import org.ovamunous.springsecurity.model.Role;
 import org.ovamunous.springsecurity.model.User;
 import org.springframework.stereotype.Repository;
@@ -37,7 +38,21 @@ public class RoleDaoImp implements RoleDao {
     }
     @Override
     public Role getRole(String role) {
-        return (Role) em.createQuery("FROM Role WHERE role = :role")
-                .setParameter("role", role).getSingleResult();
+        try {
+            return (Role) em.createQuery("FROM Role WHERE role = :role")
+                    .setParameter("role", "ROLE_"+role).getSingleResult();
+        } catch (NoResultException e) {
+            return new Role("ROLE_"+role);
+        }
+    }
+    @Override
+    public Role getRoleById(int id) {
+        return em.find(Role.class, id);
+    }
+    @Override
+    public void deleteRoleById(int id) {
+        Role role = getRoleById(id);
+        em.createNativeQuery("DELETE FROM user_roles WHERE roles_id="+role.getId()).executeUpdate();
+        em.remove(getRoleById(id));
     }
 }

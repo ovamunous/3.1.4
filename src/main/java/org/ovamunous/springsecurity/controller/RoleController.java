@@ -27,16 +27,37 @@ public class RoleController {
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public String allUsers(ModelMap model) {
         List<Role> roles = roleService.getRoles();
+        model.addAttribute("roles", roles);
         model.addAttribute("newRole", new Role());
         return "roles";
     }
 
-    @PostMapping("/roleAction")
+    @PostMapping("/admin/roles/roleAction")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public String userAction(@ModelAttribute("newRole") Role newRole,
-                             @RequestParam("action") String action, @RequestParam("id") String id,
+                             @RequestParam("action") String action,
+                             @RequestParam(value = "id") String id,
                              ModelMap model) {
+        switch (action) {
+            case "add":
+                roleService.addRole(newRole);
+                break;
+            case "update":
+                try {
+                    Role oldRole = roleService.getRoleById(Integer.parseInt(id));
+                    oldRole.setRole(newRole.getRole());
+                    roleService.updateRole(oldRole);
+                } catch (Exception e) {
+                    throw new EntityNotFoundException("Role not found");
+                }
+                break;
+            case "delete":
+
+                    roleService.deleteRoleById(Integer.parseInt(id));
+
+                break;
+        }
         newRole = null;
-        return "redirect:/";
+        return "redirect:/admin/roles";
     }
 }
