@@ -33,17 +33,17 @@ public class WebSecurityConfig {
         this.userDao = userDao;
     }
 
-//    @Bean
-//    @Order(1)
-//    public SecurityFilterChain apiFilterChain(HttpSecurity http) throws Exception {
-//        http
-//                .securityMatcher("/admin/**")
-//                .authorizeHttpRequests(authorize -> authorize
-//                        .anyRequest().hasRole("ADMIN")
-//                )
-//                .httpBasic(Customizer.withDefaults());
-//        return http.build();
-//    }
+    @Bean
+    @Order(1)
+    public SecurityFilterChain apiFilterChain(HttpSecurity http) throws Exception {
+        http
+                .securityMatcher("/admin/**")
+                .authorizeHttpRequests(authorize -> authorize
+                        .anyRequest().hasRole("ADMIN")
+                )
+                .httpBasic(Customizer.withDefaults());
+        return http.build();
+    }
 
     @Bean
     public SecurityFilterChain formLoginFilterChain(HttpSecurity http) throws Exception {

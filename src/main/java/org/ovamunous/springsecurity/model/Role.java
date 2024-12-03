@@ -59,6 +59,10 @@ public class Role  implements GrantedAuthority {
         this.role = role;
     }
 
+    public String getRoleFullString() {
+        return "Role [id=" + id + ", role=" + role + "]";
+    }
+
     @Override
     public String getAuthority() {
         return getRole();
@@ -66,6 +70,7 @@ public class Role  implements GrantedAuthority {
 
     @Override
     public String toString() {
-        return "Role [id=" + id + ", role=" + role + "]";
+        return role.substring(5, role.length());
     }
+
 }
