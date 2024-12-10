@@ -1,7 +1,6 @@
 package org.ovamunous.springsecurity.service;
 
 import org.ovamunous.springsecurity.model.Role;
-import org.ovamunous.springsecurity.model.User;
 
 import java.util.List;
 import java.util.Set;

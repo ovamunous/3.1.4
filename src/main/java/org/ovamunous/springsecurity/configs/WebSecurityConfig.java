@@ -22,14 +22,12 @@ import org.springframework.security.web.SecurityFilterChain;
 public class WebSecurityConfig {
     private final SuccessUserHandler successUserHandler;
     private final UserDetailsService userDetailsService;
-//    private final PasswordEncoder passwordEncoder;
 
     @Autowired
     public WebSecurityConfig(SuccessUserHandler successUserHandler,
                              UserDetailsService userDetailsService) {
         this.successUserHandler = successUserHandler;
         this.userDetailsService = userDetailsService;
-//        this.passwordEncoder = passwordEncoder;
     }
 
     @Bean

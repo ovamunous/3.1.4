@@ -3,7 +3,6 @@ package org.ovamunous.springsecurity.dao;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import org.ovamunous.springsecurity.model.Role;
-import org.ovamunous.springsecurity.model.User;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -11,7 +10,7 @@ import java.util.List;
 @Repository
 public class RoleDaoImp implements RoleDao {
 
-    private EntityManager em;
+    private final EntityManager em;
 
 
     public RoleDaoImp(EntityManager em) {

@@ -40,9 +40,12 @@ public class AdminController {
 
     @GetMapping("/admin/users")
     public String allUsers(ModelMap model) {
-        controllerService.getAuthentication(model);
+        String currentUser = controllerService.getAuthenticationName();
+        String currentRole =controllerService.getAuthenticationRoles();
         List<User> users = userService.getUsers();
         List<Role> roles = roleService.getRoles();
+        model.addAttribute("currentUser", currentUser);
+        model.addAttribute("currentRole", currentRole);
         model.addAttribute("users", users);
         model.addAttribute("newUser", new User());
         model.addAttribute("roles", roles);

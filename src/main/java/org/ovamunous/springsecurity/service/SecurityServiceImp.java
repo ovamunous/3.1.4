@@ -8,31 +8,31 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import org.springframework.ui.ModelMap;
 
 import java.util.stream.Collectors;
+
 
 @Service
 public class SecurityServiceImp implements SecurityService {
 
     private final UserDao userDao;
+    private Authentication authentication;
 
     SecurityServiceImp(UserDao userDao) {
         this.userDao = userDao;
     }
 
     @Override
-    public void getAuthentication(ModelMap model) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null) {
-            String currentUser = authentication.getName();
-            String currentRole = authentication.getAuthorities().stream()
-                    .map(GrantedAuthority::getAuthority)
-                    .collect(Collectors.joining(", "));
-
-            model.addAttribute("currentUser", currentUser);
-            model.addAttribute("currentRole", currentRole);
-        }
+    public String getAuthenticationName() {
+        authentication = SecurityContextHolder.getContext().getAuthentication();
+        return authentication.getName();
+    }
+    @Override
+    public String getAuthenticationRoles() {
+        authentication = SecurityContextHolder.getContext().getAuthentication();
+        return authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.joining(", "));
     }
 
     @Override

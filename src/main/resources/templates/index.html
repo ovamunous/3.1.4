@@ -31,6 +31,22 @@
             const updateModal = new bootstrap.Modal(document.getElementById('updateUser Modal'));
             updateModal.show();
         }
+        function showDeleteForm(button) {
+            const userId = button.getAttribute('data-id');
+            const username = button.getAttribute('data-username');
+            const email = button.getAttribute('data-email');
+            const password = button.getAttribute('data-password');
+            const roles = button.getAttribute('data-roles').split(', ');
+
+            document.getElementById('deleteUser Id').value = userId;
+            document.getElementById('deleteUsername').value = username;
+            document.getElementById('deleteEmail').value = email;
+            document.getElementById('deletePassword').value = password;
+            document.getElementById('deleteRoles').value = roles;
+
+            const deleteModal = new bootstrap.Modal(document.getElementById('deleteUser Modal'));
+            deleteModal.show();
+        }
 
         function addRole(selectId, inputId) {
             const select = document.getElementById(selectId);
@@ -51,6 +67,13 @@
         .bg {
             background-color: #eaeaea;
         }
+        .sidebar {
+            min-height: 100vh;
+        }
+        .content {
+            flex: 1;
+            overflow-y: auto;
+        }
     </style>
 </head>
 <body class="m-0">
@@ -61,7 +84,7 @@
         <span>with roles: <strong th:text="${currentRole}"></strong></span>
         <span class="float-end"><a th:href="@{/logout}" class="text-white">LOGOUT</a></span>
     </div>
-    <div class="row g-0">
+    <div class="d-flex">
         <nav class="col-md-2 d-none d-md-block bg-white sidebar">
             <div class="sidebar-sticky">
                 <ul class="nav flex-column">
@@ -75,7 +98,7 @@
             </div>
         </nav>
 
-        <main class="col-md-10 ms-sm-auto col-lg-10 px-4 bg" >
+        <main class="content bg px-4">
             <h2>Admin panel</h2>
             <div id="userTable">
                 <ul class="nav nav-tabs">
@@ -108,8 +131,8 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <th:block th:each="user, iterStat : ${users}">
-                                    <tr class="${iterStat.even ? 'bg-light' : 'bg-secondary text-white'}">
+                                <th:block th:each="user: ${users}">
+                                    <tr>
                                         <td th:text="${user.getId()}"></td>
                                         <td th:text="${user.getUsername()}"></td>
                                         <td th:text="${user.getEmail()}"></td>
@@ -125,10 +148,13 @@
                                                     onclick="showUpdateForm(this)">Update</button>
                                         </td>
                                         <td>
-                                            <form th:action="@{/admin/users/delete}" method="post" class="d-inline">
-                                                <input type="hidden" th:name="id" th:value="${user.getId()}"/>
-                                                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
-                                            </form>
+                                            <button type="button" class="btn btn-danger btn-sm mb-2"
+                                                    th:data-id="${user.getId()}"
+                                                    th:data-username="${user.getUsername()}"
+                                                    th:data-email="${user.getEmail()}"
+                                                    th:data-password="${user.getPassword()}"
+                                                    th:data-roles="${user.getRoles()}"
+                                                    onclick="showDeleteForm(this)">Delete</button>
                                         </td>
                                     </tr>
                                 </th:block>
@@ -239,20 +265,32 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="deleteUser ModalLabel">Confirm Deletion</h5>
+                <h5 class="modal-title" id="deleteUser ModalLabel">Delete User</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <p>Are you sure you want to delete this user?</p>
-                <p><strong>Username:</strong> <span id="deleteUsername"></span></p>
-                <p><strong>Email:</strong> <span id="deleteEmail"></span></p>
-                <p><strong>Roles:</strong> <span id="deleteRoles"></span></p>
-            </div>
-            <div class="modal-footer">
-                <form id="deleteUser Form" th:action="@{/admin/users/delete}" method="post">
-                    <input type="hidden" id="deleteUser Id" name="id" />
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-danger">Delete</button>
+                <form th:method="POST" th:action="@{/admin/users/delete}">
+                    <div class="mb-3">
+                        <label for="deleteUser Id" class="form-label">Id</label>
+                        <input type="text" id="deleteUser Id" class="form-control" name="id" readonly/>
+                    </div>
+                    <div class="mb-3">
+                        <label for="deleteUsername" class="form-label">Username</label>
+                        <input type="text" id="deleteUsername" class="form-control" name="username" readonly/>
+                    </div>
+                    <div class="mb-3">
+                        <label for="deleteEmail" class="form-label">Email</label>
+                        <input type="email" id="deleteEmail" class="form-control" name="email" readonly/>
+                    </div>
+                    <div class="mb-3">
+                        <label for="deletePassword" class="form-label">Password</label>
+                        <input type="text" id="deletePassword" class="form-control" name="password" readonly/>
+                    </div>
+                    <div class="mb-3">
+                        <label for="deleteRoles" class="form-label">Roles</label>
+                        <input type="text" id="deleteRoles" class="form-control" name="deleteRoles" readonly/>
+                    </div>
+                    <button type="submit" class="btn btn-danger">Delete User</button>
                 </form>
             </div>
         </div>
