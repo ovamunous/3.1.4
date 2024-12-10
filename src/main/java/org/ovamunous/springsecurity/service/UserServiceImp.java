@@ -2,56 +2,50 @@ package org.ovamunous.springsecurity.service;
 
 import jakarta.transaction.Transactional;
 
-import org.ovamunous.springsecurity.dao.RoleDao;
 import org.ovamunous.springsecurity.dao.UserDao;
 import org.ovamunous.springsecurity.model.Role;
 import org.ovamunous.springsecurity.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImp implements UserService {
 
-    private UserDao userDao;
-    private PasswordEncoder passwordEncoder;
-
-    private RoleService roleService;
+    private final UserDao userDao;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
     public UserServiceImp(UserDao userDao, PasswordEncoder passwordEncoder) {
         this.userDao = userDao;
         this.passwordEncoder = passwordEncoder;
     }
-    
-    @Autowired
-    public void setRoleService(RoleService roleService) {
-        this.roleService = roleService;
-    }
 
     @Transactional
     @Override
     public void addUser(User user) {
+        if (userDao.getUserByUsername(user.getUsername()) != null) {
+            return;
+        }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userDao.addUser(user);
     }
 
     @Transactional
     @Override
-    public void updateUser(User user) {
-        userDao.updateUser(user);
+    public void updateUser(User newUser, int id, Set<Role> roles) {
+        User oldUser = this.getUser(id);
+        oldUser.setRoles(roles);
+        if (!(oldUser.getPassword().equals(newUser.getPassword()))) {
+            oldUser.setPassword(passwordEncoder.encode(newUser.getPassword()));
+        }
+        oldUser.setEmail(newUser.getEmail());
+        oldUser.setUsername(newUser.getUsername());
+        userDao.updateUser(oldUser);
     }
 
     @Transactional
@@ -75,14 +69,4 @@ public class UserServiceImp implements UserService {
         return userDao.getUserByUsername(username);
     }
 
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userDao.getUserByUsername(username);
-
-        if (user == null) {
-            throw new UsernameNotFoundException("User not found");
-        }
-
-        return user;
-    }
 }

@@ -1,6 +1,7 @@
 package org.ovamunous.springsecurity.dao;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
 import jakarta.validation.Valid;
 
@@ -19,17 +20,17 @@ public class UserDaoImp implements UserDao {
     private EntityManager em;
 
     @Override
-    public void addUser(@Valid User user) {
+    public void addUser(User user) {
         em.persist(user);
     }
 
     @Override
-    public void updateUser(@Valid User user) {
+    public void updateUser(User user) {
         em.merge(user);
     }
 
     @Override
-    public void deleteUser(@Valid User user) {
+    public void deleteUser(User user) {
         em.remove(em.contains(user) ? user : em.merge(user));
     }
 
@@ -46,7 +47,11 @@ public class UserDaoImp implements UserDao {
 
     @Override
     public User getUserByUsername(String username) {
-        return (User) em.createQuery("FROM User WHERE username = :username")
-                .setParameter("username", username).getSingleResult();
+        try {
+            return (User) em.createQuery("SELECT u FROM User u JOIN FETCH u.roles WHERE u.username = :username")
+                    .setParameter("username", username).getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
     }
 }

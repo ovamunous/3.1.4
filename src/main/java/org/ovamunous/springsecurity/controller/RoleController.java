@@ -57,7 +57,6 @@ public class RoleController {
 
                 break;
         }
-        newRole = null;
         return "redirect:/admin/roles";
     }
 }
