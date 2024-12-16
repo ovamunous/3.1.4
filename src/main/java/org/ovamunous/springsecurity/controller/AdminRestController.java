@@ -2,7 +2,6 @@ package org.ovamunous.springsecurity.controller;
 
 
 import org.ovamunous.springsecurity.model.User;
-import org.ovamunous.springsecurity.service.SecurityService;
 import org.ovamunous.springsecurity.service.RoleService;
 import org.ovamunous.springsecurity.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;

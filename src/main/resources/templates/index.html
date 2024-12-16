@@ -30,7 +30,7 @@
                     const userTableBody = document.querySelector('#tbody2');
                     userTableBody.innerHTML = '';
                     data.forEach(user => {
-                        const roles = user.roles.map(role => role.role).map(role => role.substring(5, role.length)).join(', ');
+                        const roles = user.roles.map(role => role.role.substring(5)).join(', ');
                         const row = `
                             <tr>
                                 <td>${user.id}</td>
@@ -47,7 +47,8 @@
                 });
         }
 
-        function createUser () {
+        function createUser (event) {
+            event.preventDefault(); // Prevent form submission
             const rolesInput = document.getElementById('rolesInput').value.split(",").map(role => role.trim());
             const roles = rolesInput.map(role => ({ role }));
             const user = {
@@ -63,6 +64,7 @@
                 },
                 body: JSON.stringify(user)
             }).then(() => {
+                toggleView('table');
                 fetchUsers();
             });
         }
@@ -77,6 +79,7 @@
             const updateModal = new bootstrap.Modal(document.getElementById('updateUser Modal'));
             updateModal.show();
         }
+
         function showDeleteForm(id, username, email, password, roles) {
             document.getElementById('deleteUser Id').value = id;
             document.getElementById('deleteUsername').value = username;
@@ -88,8 +91,8 @@
             deleteModal.show();
         }
 
-        function updateUser() {
-            const id = document.getElementById('updateUser Id').value
+        function updateUser () {
+            const id = document.getElementById('updateUser Id').value;
             const rolesInput = document.getElementById('updateRolesInput').value.split(",").map(role => role.trim());
             const roles = rolesInput.map(role => ({ role }));
             const user = {
@@ -112,7 +115,7 @@
             });
         }
 
-        function deleteUser() {
+        function deleteUser () {
             const id = document.getElementById('deleteUser Id').value;
             fetch(`/api/users/${id}`, {
                 method: 'DELETE'
@@ -169,6 +172,7 @@
                     <tr>
                         <td>
                             <table class="table">
+                                <thead>
                                 <tr>
                                     <th>ID</th>
                                     <th>Username</th>
@@ -178,8 +182,8 @@
                                     <th>Update</th>
                                     <th>Delete</th>
                                 </tr>
-                                <tbody id="tbody2">
-                                </tbody>
+                                </thead>
+                                <tbody id="tbody2"></tbody>
                             </table>
                         </td>
                     </tr>
@@ -197,13 +201,15 @@
                     </li>
                 </ul>
                 <table class="table table-bordered rounded">
+                    <thead>
                     <tr>
                         <th class="table-secondary">ADD NEW USER</th>
                     </tr>
+                    </thead>
                     <tbody>
                     <tr>
                         <td>
-                            <form onsubmit="createUser();">
+                            <form onsubmit="createUser (event);">
                                 <div class="mb-3">
                                     <label for="username" class="form-label">Username</label>
                                     <input type="text" id="username" class="form-control" required />
@@ -232,6 +238,7 @@
     </div>
 </div>
 
+<!-- Update User Modal -->
 <div class="modal fade" id="updateUser Modal" tabindex="-1" aria-labelledby="updateUser ModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -240,7 +247,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form onsubmit="event.preventDefault(); updateUser();">
+                <form onsubmit="event.preventDefault(); updateUser ();">
                     <input type="hidden" id="updateUser Id" />
                     <div class="mb-3">
                         <label for="updateUsername" class="form-label">Username</label>
@@ -264,6 +271,8 @@
         </div>
     </div>
 </div>
+
+<!-- Delete User Modal -->
 <div class="modal fade" id="deleteUser Modal" tabindex="-1" aria-labelledby="deleteUser ModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -272,7 +281,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form onsubmit="event.preventDefault(); deleteUser();">
+                <form onsubmit="event.preventDefault(); deleteUser ();">
                     <div class="mb-3">
                         <label for="deleteUser Id" class="form-label">Id</label>
                         <input type="text" id="deleteUser Id" class="form-control" name="id" readonly/>
