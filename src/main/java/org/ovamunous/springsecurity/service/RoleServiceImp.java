@@ -64,4 +64,9 @@ public class RoleServiceImp implements RoleService {
                 .map(this::getRole).collect(Collectors.toSet());
     }
 
+    @Override
+    public Set<Role> checkRoles(Set<Role> roles) {
+        return roles.stream().map(t -> this.getRole(t.getRole())).collect(Collectors.toSet());
+    }
+
 }

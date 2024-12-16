@@ -37,11 +37,10 @@ public class UserServiceImp implements UserService {
 
     @Transactional
     @Override
-    public void updateUser(User newUser, int id, Set<Role> roles) {
+    public void updateUser(User newUser, long id) {
         User oldUser = this.getUser(id);
-        oldUser.setRoles(roles);
         if (!(oldUser.getPassword().equals(newUser.getPassword()))) {
-            oldUser.setPassword(passwordEncoder.encode(newUser.getPassword()));
+            newUser.setPassword(passwordEncoder.encode(newUser.getPassword()));
         }
         oldUser.setEmail(newUser.getEmail());
         oldUser.setUsername(newUser.getUsername());

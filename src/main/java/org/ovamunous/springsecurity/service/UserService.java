@@ -11,7 +11,7 @@ import java.util.Set;
 public interface UserService {
 
     void addUser(User user);
-    void updateUser(User user, int id, Set<Role> roles);
+    void updateUser(User user,long id);
     void deleteUser(User user);
     List<User> getUsers();
     User getUser(long id);

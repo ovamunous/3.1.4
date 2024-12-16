@@ -14,4 +14,5 @@ public interface RoleService {
     Role getRoleById(int id);
     void deleteRoleById(int id);
     Set<Role> getRolesByString(String string);
+    Set<Role> checkRoles(Set<Role> roles);
 }
